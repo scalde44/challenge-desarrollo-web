@@ -26,6 +26,7 @@ Sólo aplícate al reto si te sientes capaz de hacerlo.
 
 ## Reto del Backend
 - Poner en marcha el backend
+- Crear un nuevo servicio para consultar los logs (nuevo entrypoint)
 - Cambiar el broker de nats por rabbitmq
 - Desplegar en Heroku usando Docker
 
