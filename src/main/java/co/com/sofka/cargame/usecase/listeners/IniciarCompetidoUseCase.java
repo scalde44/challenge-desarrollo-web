@@ -20,20 +20,20 @@ public class IniciarCompetidoUseCase extends UseCase<TriggeredEvent<CompetidorIn
     public void executeUseCase(TriggeredEvent<CompetidorIniciado> competidorIniciadoTriggeredEvent) {
         var event = competidorIniciadoTriggeredEvent.getDomainEvent();
         var moverCarroService = getService(MoverCarroService.class).orElseThrow();
-        var events = repository().getEventsBy("juego", event.aggregateRootId());
-        var jugando = Juego.from(JuegoId.of(event.aggregateRootId()), events).jugando();
         //loop
-        while (jugando){
+        while (estaJugando(event).equals(Boolean.TRUE)){
             moverCarroService.mover(event.getCarroId(), event.getCarrilId());
             logger.info("Running => "+event.getCarrilId());
-            events = repository().getEventsBy("juego", event.aggregateRootId());
-            jugando = Juego.from(
-                    JuegoId.of(event.aggregateRootId()), events
-            ).jugando();
             esperar4Segundos();
         }
 
         emit().onResponse(new ResponseEvents(List.of()));
+    }
+
+    private Boolean estaJugando(CompetidorIniciado event) {
+        return Juego.from(JuegoId.of(event.aggregateRootId()),
+                repository().getEventsBy("juego", event.aggregateRootId())
+        ).jugando();
     }
 
     private void esperar4Segundos() {

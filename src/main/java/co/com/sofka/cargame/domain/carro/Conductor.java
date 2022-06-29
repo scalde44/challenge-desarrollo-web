@@ -24,4 +24,10 @@ public class Conductor extends Entity<Cedula> {
         return 1 + rn.nextInt(6);
     }
 
+    @Override
+    public String toString() {
+        return "Conductor{" +
+                "nombre='" + nombre + '\'' +
+                '}';
+    }
 }

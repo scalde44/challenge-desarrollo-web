@@ -10,26 +10,31 @@ import co.com.sofka.cargame.usecase.MoverCarroUseCase;
 import co.com.sofka.cargame.usecase.services.MoverCarroService;
 import co.com.sofka.domain.generic.DomainEvent;
 import co.com.sofka.infraestructure.asyn.SubscriberEvent;
+import co.com.sofka.infraestructure.bus.EventBus;
 import co.com.sofka.infraestructure.repository.EventStoreRepository;
+import co.com.sofka.infraestructure.store.StoredEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 @Service
 public class MoverCarroCommandService implements MoverCarroService {
     private final EventStoreRepository eventStoreRepository;
+    private final EventBus eventBus;
     private final MoverCarroUseCase moverCarroUseCase;
-    private final SubscriberEvent subscriberEvent;
 
     @Autowired
     public MoverCarroCommandService(
             EventStoreRepository eventStoreRepository,
-            SubscriberEvent subscriberEvent,
+            EventBus eventBus,
             MoverCarroUseCase moverCarroUseCase) {
         this.eventStoreRepository = eventStoreRepository;
+        this.eventBus = eventBus;
         this.moverCarroUseCase = moverCarroUseCase;
-        this.subscriberEvent = subscriberEvent;
     }
 
     @Override
@@ -38,8 +43,17 @@ public class MoverCarroCommandService implements MoverCarroService {
         moverCarroUseCase.addRepository(domainEventRepository());
         UseCaseHandler.getInstance()
                 .setIdentifyExecutor(carroId.value())
-                .asyncExecutor(moverCarroUseCase, new RequestCommand<>(command))
-                .subscribe(subscriberEvent);
+                .syncExecutor(moverCarroUseCase, new RequestCommand<>(command))
+                .orElseThrow()
+        .getDomainEvents().forEach(event -> {
+            StoredEvent storedEvent = StoredEvent.wrapEvent(event);
+            Optional.ofNullable(event.aggregateRootId()).ifPresent(aggregateId -> {
+                if (Objects.nonNull(event.getAggregateName()) && !event.getAggregateName().isBlank()) {
+                    eventStoreRepository.saveEvent(event.getAggregateName(), aggregateId, storedEvent);
+                }
+            });
+            eventBus.publish(event);
+        });
     }
 
     private DomainEventRepository domainEventRepository() {

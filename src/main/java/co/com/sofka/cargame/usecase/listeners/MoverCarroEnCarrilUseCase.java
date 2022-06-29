@@ -20,8 +20,8 @@ public class MoverCarroEnCarrilUseCase extends UseCase<TriggeredEvent<Kilometraj
         var nuevaPosicion = event.getDistancia();
         var events = repository().getEventsBy("carril", event.getCarrilId().value());
         var carril = Carril.from(event.getCarrilId(), events);
-        logger.log(Level.INFO, "####### CARRO {0} ", carril.carroId());
         if (carril.desplazamientoFinal().equals(Boolean.FALSE)) {
+            logger.log(Level.INFO, "####### CARRO {0} ", carril.carroId());
             carril.moverCarro(nuevaPosicion);
             if (carril.posicionActual() >= carril.posicionDeseada()) {
                 carril.alcazarLaMeta();

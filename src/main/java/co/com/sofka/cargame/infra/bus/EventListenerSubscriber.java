@@ -4,18 +4,23 @@ import co.com.sofka.business.generic.ServiceBuilder;
 import co.com.sofka.business.generic.UseCase;
 import co.com.sofka.business.generic.UseCaseHandler;
 import co.com.sofka.business.repository.DomainEventRepository;
+import co.com.sofka.business.support.RequestCommand;
 import co.com.sofka.business.support.ResponseEvents;
 import co.com.sofka.business.support.TriggeredEvent;
 import co.com.sofka.domain.generic.DomainEvent;
 import co.com.sofka.infraestructure.asyn.SubscriberEvent;
+import co.com.sofka.infraestructure.bus.EventBus;
 import co.com.sofka.infraestructure.repository.EventStoreRepository;
+import co.com.sofka.infraestructure.store.StoredEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Flow;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,8 +29,8 @@ public class EventListenerSubscriber implements Flow.Subscriber<DomainEvent> {
     private static final Logger logger = Logger.getLogger(EventListenerSubscriber.class.getName());
     private final Set<UseCase.UseCaseWrap> useCases;
     private final EventStoreRepository repository;
-    private final SubscriberEvent subscriberEvent;
     private final ServiceBuilder serviceBuilder;
+    private final EventBus eventBus;
 
 
     @Autowired
@@ -33,11 +38,12 @@ public class EventListenerSubscriber implements Flow.Subscriber<DomainEvent> {
             Set<UseCase.UseCaseWrap> useCases,
             EventStoreRepository repository,
             ServiceBuilder serviceBuilder,
-            SubscriberEvent subscriberEvent) {
+            EventBus eventBus) {
         this.useCases = useCases;
         this.repository = repository;
         this.serviceBuilder = serviceBuilder;
-        this.subscriberEvent = subscriberEvent;
+        this.eventBus = eventBus;
+
     }
 
     @Override
@@ -59,10 +65,19 @@ public class EventListenerSubscriber implements Flow.Subscriber<DomainEvent> {
                     return EventListenerSubscriber.this.repository.getEventsBy(aggregate, aggregateRootId);
                 }
             });
+
             UseCaseHandler.getInstance()
                     .setIdentifyExecutor(event.aggregateRootId())
-                    .asyncExecutor(useCase, new TriggeredEvent<>(event))
-                    .subscribe(this.subscriberEvent);
+                    .syncExecutor(useCase, new TriggeredEvent<>(event))
+            .ifPresent( responseEvents -> responseEvents.getDomainEvents().forEach(e -> {
+                StoredEvent storedEvent = StoredEvent.wrapEvent(e);
+                Optional.ofNullable(e.aggregateRootId()).ifPresent(aggregateId -> {
+                    if (Objects.nonNull(e.getAggregateName()) && !e.getAggregateName().isBlank()) {
+                        repository.saveEvent(e.getAggregateName(), aggregateId, storedEvent);
+                    }
+                });
+                eventBus.publish(e);
+            }));
         });
     }
 

@@ -24,10 +24,6 @@ import java.util.Set;
 @Configuration
 public class JuegoConfig {
 
-    @Bean
-    public SubscriberEvent subscriberEvent(EventStoreRepository eventStoreRepository, EventBus eventBus) {
-        return new SubscriberEvent(eventStoreRepository, eventBus);
-    }
 
     @Bean
     public EventSubscriber eventSubscriber(@Value("${spring.nats.uri}") String uri, EventListenerSubscriber eventListenerSubscriber, SocketController socketController) throws IOException, InterruptedException {
