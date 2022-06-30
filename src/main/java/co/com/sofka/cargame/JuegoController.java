@@ -3,13 +3,11 @@ package co.com.sofka.cargame;
 import co.com.sofka.business.generic.UseCaseHandler;
 import co.com.sofka.business.repository.DomainEventRepository;
 import co.com.sofka.business.support.RequestCommand;
-import co.com.sofka.business.support.TriggeredEvent;
 import co.com.sofka.cargame.domain.juego.command.CrearJuegoCommand;
 import co.com.sofka.cargame.domain.juego.command.InicarJuegoCommand;
 import co.com.sofka.cargame.usecase.CrearJuegoUseCase;
 import co.com.sofka.cargame.usecase.InicarJuegoUseCase;
 import co.com.sofka.domain.generic.DomainEvent;
-import co.com.sofka.infraestructure.asyn.SubscriberEvent;
 import co.com.sofka.infraestructure.bus.EventBus;
 import co.com.sofka.infraestructure.repository.EventStoreRepository;
 import co.com.sofka.infraestructure.store.StoredEvent;
@@ -32,7 +30,7 @@ public class JuegoController {
     @Autowired
     private InicarJuegoUseCase inicarJuegoUseCase;
     @Autowired
-    private  EventBus eventBus;
+    private EventBus eventBus;
 
     @PostMapping("/crearJuego")
     public String crearJuego(@RequestBody CrearJuegoCommand command) {

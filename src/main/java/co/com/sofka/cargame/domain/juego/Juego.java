@@ -39,7 +39,7 @@ public class Juego extends AggregateEvent<JuegoId> {
         appendChange(new JugadorCreado(jugadorId, nombre, color)).apply();
     }
 
-    public void iniciarJuegoACompetidor(CarroId carroId, CarrilId carrilId){
+    public void iniciarJuegoACompetidor(CarroId carroId, CarrilId carrilId) {
         appendChange(new CompetidorIniciado(carroId, carrilId)).apply();
     }
 

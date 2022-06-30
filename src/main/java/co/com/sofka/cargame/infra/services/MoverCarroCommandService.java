@@ -9,7 +9,6 @@ import co.com.sofka.cargame.domain.carro.values.CarroId;
 import co.com.sofka.cargame.usecase.MoverCarroUseCase;
 import co.com.sofka.cargame.usecase.services.MoverCarroService;
 import co.com.sofka.domain.generic.DomainEvent;
-import co.com.sofka.infraestructure.asyn.SubscriberEvent;
 import co.com.sofka.infraestructure.bus.EventBus;
 import co.com.sofka.infraestructure.repository.EventStoreRepository;
 import co.com.sofka.infraestructure.store.StoredEvent;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 @Service
 public class MoverCarroCommandService implements MoverCarroService {
@@ -45,7 +43,7 @@ public class MoverCarroCommandService implements MoverCarroService {
                 .setIdentifyExecutor(carroId.value())
                 .syncExecutor(moverCarroUseCase, new RequestCommand<>(command))
                 .orElseThrow()
-        .getDomainEvents().forEach(event -> {
+                .getDomainEvents().forEach(event -> {
             StoredEvent storedEvent = StoredEvent.wrapEvent(event);
             Optional.ofNullable(event.aggregateRootId()).ifPresent(aggregateId -> {
                 if (Objects.nonNull(event.getAggregateName()) && !event.getAggregateName().isBlank()) {

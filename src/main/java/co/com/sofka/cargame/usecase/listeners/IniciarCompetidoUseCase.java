@@ -21,9 +21,9 @@ public class IniciarCompetidoUseCase extends UseCase<TriggeredEvent<CompetidorIn
         var event = competidorIniciadoTriggeredEvent.getDomainEvent();
         var moverCarroService = getService(MoverCarroService.class).orElseThrow();
         //loop
-        while (estaJugando(event).equals(Boolean.TRUE)){
+        while (estaJugando(event).equals(Boolean.TRUE)) {
             moverCarroService.mover(event.getCarroId(), event.getCarrilId());
-            logger.info("Running => "+event.getCarrilId());
+            logger.info("Running => " + event.getCarrilId());
             esperar4Segundos();
         }
 

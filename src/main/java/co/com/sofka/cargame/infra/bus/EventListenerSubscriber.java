@@ -4,11 +4,9 @@ import co.com.sofka.business.generic.ServiceBuilder;
 import co.com.sofka.business.generic.UseCase;
 import co.com.sofka.business.generic.UseCaseHandler;
 import co.com.sofka.business.repository.DomainEventRepository;
-import co.com.sofka.business.support.RequestCommand;
 import co.com.sofka.business.support.ResponseEvents;
 import co.com.sofka.business.support.TriggeredEvent;
 import co.com.sofka.domain.generic.DomainEvent;
-import co.com.sofka.infraestructure.asyn.SubscriberEvent;
 import co.com.sofka.infraestructure.bus.EventBus;
 import co.com.sofka.infraestructure.repository.EventStoreRepository;
 import co.com.sofka.infraestructure.store.StoredEvent;
@@ -20,7 +18,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Flow;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -69,15 +66,15 @@ public class EventListenerSubscriber implements Flow.Subscriber<DomainEvent> {
             UseCaseHandler.getInstance()
                     .setIdentifyExecutor(event.aggregateRootId())
                     .syncExecutor(useCase, new TriggeredEvent<>(event))
-            .ifPresent( responseEvents -> responseEvents.getDomainEvents().forEach(e -> {
-                StoredEvent storedEvent = StoredEvent.wrapEvent(e);
-                Optional.ofNullable(e.aggregateRootId()).ifPresent(aggregateId -> {
-                    if (Objects.nonNull(e.getAggregateName()) && !e.getAggregateName().isBlank()) {
-                        repository.saveEvent(e.getAggregateName(), aggregateId, storedEvent);
-                    }
-                });
-                eventBus.publish(e);
-            }));
+                    .ifPresent(responseEvents -> responseEvents.getDomainEvents().forEach(e -> {
+                        StoredEvent storedEvent = StoredEvent.wrapEvent(e);
+                        Optional.ofNullable(e.aggregateRootId()).ifPresent(aggregateId -> {
+                            if (Objects.nonNull(e.getAggregateName()) && !e.getAggregateName().isBlank()) {
+                                repository.saveEvent(e.getAggregateName(), aggregateId, storedEvent);
+                            }
+                        });
+                        eventBus.publish(e);
+                    }));
         });
     }
 

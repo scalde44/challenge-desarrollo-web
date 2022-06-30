@@ -9,10 +9,7 @@ import co.com.sofka.cargame.domain.juego.Juego;
 import co.com.sofka.cargame.domain.juego.events.JuegoIniciado;
 import co.com.sofka.cargame.domain.juego.values.JuegoId;
 import co.com.sofka.cargame.usecase.services.CarrilCarroService;
-import co.com.sofka.cargame.usecase.services.MoverCarroService;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 public class MotorJuegoUseCase extends UseCase<TriggeredEvent<JuegoIniciado>, ResponseEvents> {
@@ -26,12 +23,12 @@ public class MotorJuegoUseCase extends UseCase<TriggeredEvent<JuegoIniciado>, Re
         var juego = Juego.from(juegoId, retrieveEvents());
 
         if (!competidores.isEmpty()) {
-                competidores.forEach(carroSobreCarril -> {
-                    juego.iniciarJuegoACompetidor(
-                            CarroId.of(carroSobreCarril.getCarroId()),
-                            CarrilId.of(carroSobreCarril.getCarrilId())
-                    );
-                });
+            competidores.forEach(carroSobreCarril -> {
+                juego.iniciarJuegoACompetidor(
+                        CarroId.of(carroSobreCarril.getCarroId()),
+                        CarrilId.of(carroSobreCarril.getCarrilId())
+                );
+            });
         }
 
 
