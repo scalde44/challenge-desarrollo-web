@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: ${PORT:8080}
   origin: ${ORIGIN:*}
 spring:
   application:
@@ -8,4 +8,6 @@ spring:
     mongodb:
       uri: ${MONGO_URI:mongodb+srv://retoweb:retoweb123@clusterreto.ikmfg.mongodb.net/cargame?retryWrites=true&w=majority}
   rabbitmq:
-    addresses: ${BUS_URI:amqps://misgylcb:F3gHPgLKSE0L2WlfiqoSSPFX3858uEhq@chimpanzee.rmq.cloudamqp.com/misgylcb}
+    addresses: ${BUS_URI:amqp://guest:guest@localhost:5672}
+
+#${BUS_URI:amqps://misgylcb:F3gHPgLKSE0L2WlfiqoSSPFX3858uEhq@chimpanzee.rmq.cloudamqp.com/misgylcb}
