@@ -70,7 +70,7 @@ public class JuegoController {
     }
 
     @GetMapping("/informacion-juego/{id}")
-    public InformacionJuegoQueryService.JugadoresAsociadosJuego getInformacionJuegoPor(@PathVariable String id) {
+    public InformacionJuegoQueryService.CarrosAsociadosJuego getInformacionJuegoPor(@PathVariable String id) {
         return informacionJuegoService.getInformacionJuego(JuegoId.of(id));
     }
 

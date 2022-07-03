@@ -5,5 +5,5 @@ import co.com.sofka.cargame.infra.services.InformacionJuegoQueryService;
 
 public interface InformacionJuegoService {
 
-    public InformacionJuegoQueryService.JugadoresAsociadosJuego getInformacionJuego(JuegoId juegoId);
+    public InformacionJuegoQueryService.CarrosAsociadosJuego getInformacionJuego(JuegoId juegoId);
 }

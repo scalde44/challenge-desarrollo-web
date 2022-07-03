@@ -23,12 +23,12 @@ public class InformacionJuegoQueryService implements InformacionJuegoService {
     }
 
     @Override
-    public JugadoresAsociadosJuego getInformacionJuego(JuegoId juegoId) {
+    public CarrosAsociadosJuego getInformacionJuego(JuegoId juegoId) {
         var lookup = LookupOperation.newLookup()
-                .from("juego.JugadorCreado")
+                .from("carro.CarroCreado")
                 .localField("aggregateRootId")
-                .foreignField("aggregateRootId")
-                .as("jugadores");
+                .foreignField("aggregateParentId")
+                .as("carroCreados");
 
         var aggregation = Aggregation.newAggregation(
                 lookup,
@@ -37,14 +37,14 @@ public class InformacionJuegoQueryService implements InformacionJuegoService {
 
         return mongoTemplate.aggregate(aggregation, "juego.JuegoCreado", String.class)
                 .getMappedResults().stream()
-                .map(body -> new Gson().fromJson(body, JugadoresAsociadosJuego.class))
+                .map(body -> new Gson().fromJson(body, CarrosAsociadosJuego.class))
                 .findFirst().orElseThrow();
     }
 
-    public static class JugadoresAsociadosJuego {
+    public static class CarrosAsociadosJuego {
         private String aggregateRootId;
         private Pista pista;
-        private List<JugadorCreado> jugadores;
+        private List<CarroCreado> carroCreados;
 
         public String getAggregateRootId() {
             return aggregateRootId;
@@ -62,9 +62,56 @@ public class InformacionJuegoQueryService implements InformacionJuegoService {
             this.pista = pista;
         }
 
+        public List<CarroCreado> getCarroCreados() {
+            return carroCreados;
+        }
 
-        public static class JugadorCreado {
+        public void setCarroCreados(List<CarroCreado> carroCreados) {
+            this.carroCreados = carroCreados;
+        }
 
+        public static class CarroCreado {
+
+            private String aggregateParentId;
+            private String aggregateRootId;
+            private Color color;
+
+            public String getAggregateParentId() {
+                return aggregateParentId;
+            }
+
+            public void setAggregateParentId(String aggregateParentId) {
+                this.aggregateParentId = aggregateParentId;
+            }
+
+            public String getAggregateRootId() {
+                return aggregateRootId;
+            }
+
+            public void setAggregateRootId(String aggregateRootId) {
+                this.aggregateRootId = aggregateRootId;
+            }
+
+            public Color getColor() {
+                return color;
+            }
+
+            public void setColor(Color color) {
+                this.color = color;
+            }
+
+            public static class Color {
+
+                private String value;
+
+                public String getValue() {
+                    return value;
+                }
+
+                public void setValue(String value) {
+                    this.value = value;
+                }
+            }
         }
     }
 
