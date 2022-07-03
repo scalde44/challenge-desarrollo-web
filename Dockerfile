@@ -6,8 +6,8 @@
 # 4) docker run -d -p 8080:8080 -t nombreartefacto:latest
 # 5) docker ps
 # 6) heroku container:login
-# 7) heroku container:push nombreartefacto
-# 8) heroku container:release nombreartefacto
+# 7) heroku container:push web
+# 8) heroku container:release web
 # opcional para dyos heroku ps:scale web=1, heroku restart, heroku ps
 FROM adoptopenjdk/openjdk11:alpine-jre
 
