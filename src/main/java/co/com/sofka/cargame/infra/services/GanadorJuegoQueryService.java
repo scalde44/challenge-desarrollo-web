@@ -35,7 +35,7 @@ public class GanadorJuegoQueryService implements GanadorJuegoService {
                 .map(body -> new Gson().fromJson(body, GanadorHistorico.class))
                 .collect(Collectors.toList());
 
-        //return Objects.requireNonNull(mongoTemplate.findAll(GanadorHistorico.class, "juego.PrimerLugarAsignado"));
+        
     }
 
     public static class GanadorHistorico {
