@@ -1,16 +1,17 @@
 # mvn clean install spring-boot:repackage
-# java -jar target/application-1.0-SNAPSHOT.jar
+# java -jar target/nombreartefacto-1.0-SNAPSHOT.jar
 # 1) heroku login
-# 2) heroku git:remote -a nombreapphekoku
-# 3) docker build -t web .
-# 4) docker run -d -p 8080:8080 -t web:latest
+# 2) heroku git:remote -a nombreappheroku
+# 3) docker build -t nombreartefacto .
+# 4) docker run -d -p 8080:8080 -t nombreartefacto:latest
 # 5) docker ps
 # 6) heroku container:login
-# 7) heroku container:push web
-# 8) heroku container:release web
+# 7) heroku container:push nombreartefacto
+# 8) heroku container:release nombreartefacto
+# opcional para dyos heroku ps:scale web=1, heroku restart, heroku ps
 FROM adoptopenjdk/openjdk11:alpine-jre
 
-ARG JAR_FILE=target/application-1.0-SNAPSHOT.jar
+ARG JAR_FILE=target/cargame-1.0-SNAPSHOT.jar
 WORKDIR /opt/app
 COPY ${JAR_FILE} app.jar
 EXPOSE $PORT
