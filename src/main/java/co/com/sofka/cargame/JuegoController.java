@@ -7,11 +7,13 @@ import co.com.sofka.cargame.domain.juego.command.CrearJuegoCommand;
 import co.com.sofka.cargame.domain.juego.command.InicarJuegoCommand;
 import co.com.sofka.cargame.domain.juego.values.JuegoId;
 import co.com.sofka.cargame.infra.services.GanadorJuegoQueryService;
+import co.com.sofka.cargame.infra.services.InformacionJuegoQueryService;
 import co.com.sofka.cargame.infra.services.PodioJuegoQueryService;
 import co.com.sofka.cargame.usecase.CrearJuegoUseCase;
 import co.com.sofka.cargame.usecase.InicarJuegoUseCase;
 import co.com.sofka.cargame.usecase.services.CarroService;
 import co.com.sofka.cargame.usecase.services.GanadorJuegoService;
+import co.com.sofka.cargame.usecase.services.InformacionJuegoService;
 import co.com.sofka.cargame.usecase.services.PodioJuegoService;
 import co.com.sofka.domain.generic.DomainEvent;
 import co.com.sofka.infraestructure.asyn.SubscriberEvent;
@@ -35,9 +37,8 @@ public class JuegoController {
     private PodioJuegoService podioJuegoService;
     @Autowired
     private GanadorJuegoService ganadorJuegoService;
-
     @Autowired
-    private CarroService carroService;
+    private InformacionJuegoService informacionJuegoService;
 
     @PostMapping("/crearJuego")
     public String crearJuego(@RequestBody CrearJuegoCommand command) {
@@ -67,6 +68,13 @@ public class JuegoController {
     public List<GanadorJuegoQueryService.GanadorHistorico> ganadoresHistorico() {
         return ganadorJuegoService.getGanadoresHistorico();
     }
+
+    @GetMapping("/informacion-juego/{id}")
+    public InformacionJuegoQueryService.JugadoresAsociadosJuego getInformacionJuegoPor(@PathVariable String id) {
+        return informacionJuegoService.getInformacionJuego(JuegoId.of(id));
+    }
+
+
 
     private DomainEventRepository domainEventRepository() {
         return new DomainEventRepository() {
